@@ -7,6 +7,7 @@
     <ImageView
         android:id="@+id/movie_cover_iv"
         android:contentDescription="Movie cover"
+        android:transitionName="movie_poster_transition"
         android:scaleType="fitStart"
         android:adjustViewBounds="true"
         android:layout_width="match_parent"
