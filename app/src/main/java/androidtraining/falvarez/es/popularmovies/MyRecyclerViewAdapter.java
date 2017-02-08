@@ -13,15 +13,15 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
     private static final String TAG = MyRecyclerViewAdapter.class.getSimpleName();
 
-    private String[] mPosterUrls = new String[0];
+    private MovieModel[] movies;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     private Context mContext;
 
-    public MyRecyclerViewAdapter(Context context, String[] posterUrls) {
+    public MyRecyclerViewAdapter(Context context) {
         this.mInflater = LayoutInflater.from(context);
-        this.mPosterUrls = posterUrls;
+        this.movies = null;
         this.mContext = context;
     }
 
@@ -39,14 +39,17 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         Picasso.with(mContext).setLoggingEnabled(true);
         Picasso
                 .with(mContext)
-                .load(mPosterUrls[position])
+                .load("http://image.tmdb.org/t/p/w780" + movies[position].getPosterUrl())
                 .into(holder.myImageView);
     }
 
     // total number of cells
     @Override
     public int getItemCount() {
-        return mPosterUrls.length;
+        if (movies == null) {
+            return 0;
+        }
+        return movies.length;
     }
 
 
@@ -67,8 +70,8 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     }
 
     // convenience method for getting data at click position
-    public String getItem(int id) {
-        return mPosterUrls[id];
+    public MovieModel getItem(int id) {
+        return movies[id];
     }
 
     // allows clicks events to be caught
@@ -79,5 +82,10 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemClick(View view, int position);
+    }
+
+    public void setMoviesData(MovieModel[] movies) {
+        this.movies = movies;
+        notifyDataSetChanged();
     }
 }

@@ -38,15 +38,18 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void showMovie(MovieModel movie) {
+
+        String[] dateParts = movie.getLaunchDate().split("-");
+
         mMovieTitle.setText(movie.getTitle());
         mMovieDescription.setText(movie.getDescription());
-        mMovieLaunchDate.setText(movie.getLaunchDate());
-        mMovieRating.setText(movie.getRating());
+        mMovieLaunchDate.setText(dateParts[0]);
+        mMovieRating.setText("User rating: " + movie.getRating());
 
         Picasso.with(this).setLoggingEnabled(true);
         Picasso
                 .with(this)
-                .load(movie.getPosterUrl())
+                .load("http://image.tmdb.org/t/p/w342" + movie.getPosterUrl())
                 .into(mMoviePoster);
     }
 }

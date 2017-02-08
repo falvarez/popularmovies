@@ -1,7 +1,12 @@
 package androidtraining.falvarez.es.popularmovies;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MovieModel implements Parcelable {
 
@@ -74,4 +79,36 @@ public class MovieModel implements Parcelable {
             return new MovieModel[size];
         }
     };
+
+    public static MovieModel[] getModelsFromJson(String serviceJsonString) throws JSONException {
+
+        final String API_RESULTS = "results";
+
+        final String API_TITLE = "title";
+        final String API_OVERVIEW = "overview";
+        final String API_RELEASE_DATE = "release_date";
+        final String API_VOTE_AVERAGE = "vote_average";
+        final String API_POSTER_PATH = "poster_path";
+
+        MovieModel[] models = null;
+        JSONObject moviesJson = new JSONObject(serviceJsonString);
+
+
+        JSONArray moviesArray = moviesJson.getJSONArray(API_RESULTS);
+
+        models = new MovieModel[moviesArray.length()];
+
+        for (int i = 0; i < moviesArray.length(); i++) {
+            JSONObject movie = moviesArray.getJSONObject(i);
+            models[i] = new MovieModel(
+                    movie.getString(API_TITLE),
+                    movie.getString(API_OVERVIEW),
+                    movie.getString(API_POSTER_PATH),
+                    movie.getString(API_RELEASE_DATE),
+                    movie.getString(API_VOTE_AVERAGE)
+            );
+        }
+
+        return models;
+    }
 }

@@ -1,6 +1,7 @@
 package androidtraining.falvarez.es.popularmovies;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -11,67 +12,57 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.net.URL;
 
 public class MainActivity extends AppCompatActivity implements MyRecyclerViewAdapter.ItemClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    MyRecyclerViewAdapter adapter;
+    private MyRecyclerViewAdapter adapter;
+    private TextView mErrorMessageDisplay;
+    private ProgressBar mLoadingIndicator;
+    private RecyclerView mMoviesGrid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        String[] posterUrls = {
-                "http://image.tmdb.org/t/p/w780/WLQN5aiQG8wc9SeKwixW7pAR8K.jpg",
-                "http://image.tmdb.org/t/p/w780/e1mjopzAS2KNsvpbpahQ1a6SkSn.jpg",
-                "http://image.tmdb.org/t/p/w780/z09QAf8WbZncbitewNk6lKYMZsh.jpg",
-                "http://image.tmdb.org/t/p/w780/hLudzvGfpi6JlwUnsNhXwKKg4j.jpg",
-                "http://image.tmdb.org/t/p/w780/jjBgi2r5cRt36xF6iNUEhzscEcb.jpg",
-                "http://image.tmdb.org/t/p/w780/ylXCdC106IKiarftHkcacasaAcb.jpg",
-                "http://image.tmdb.org/t/p/w780/uSHjeRVuObwdpbECaXJnvyDoeJK.jpg",
-                "http://image.tmdb.org/t/p/w780/yNsdyNbQqaKN0TQxkHMws2KLTJ6.jpg",
-                "http://image.tmdb.org/t/p/w780/WLQN5aiQG8wc9SeKwixW7pAR8K.jpg",
-                "http://image.tmdb.org/t/p/w780/e1mjopzAS2KNsvpbpahQ1a6SkSn.jpg",
-                "http://image.tmdb.org/t/p/w780/z09QAf8WbZncbitewNk6lKYMZsh.jpg",
-                "http://image.tmdb.org/t/p/w780/hLudzvGfpi6JlwUnsNhXwKKg4j.jpg",
-                "http://image.tmdb.org/t/p/w780/jjBgi2r5cRt36xF6iNUEhzscEcb.jpg",
-                "http://image.tmdb.org/t/p/w780/ylXCdC106IKiarftHkcacasaAcb.jpg",
-                "http://image.tmdb.org/t/p/w780/uSHjeRVuObwdpbECaXJnvyDoeJK.jpg",
-                "http://image.tmdb.org/t/p/w780/yNsdyNbQqaKN0TQxkHMws2KLTJ6.jpg",
-                "http://image.tmdb.org/t/p/w780/WLQN5aiQG8wc9SeKwixW7pAR8K.jpg",
-                "http://image.tmdb.org/t/p/w780/e1mjopzAS2KNsvpbpahQ1a6SkSn.jpg",
-                "http://image.tmdb.org/t/p/w780/z09QAf8WbZncbitewNk6lKYMZsh.jpg",
-                "http://image.tmdb.org/t/p/w780/hLudzvGfpi6JlwUnsNhXwKKg4j.jpg",
-                "http://image.tmdb.org/t/p/w780/jjBgi2r5cRt36xF6iNUEhzscEcb.jpg",
-                "http://image.tmdb.org/t/p/w780/ylXCdC106IKiarftHkcacasaAcb.jpg",
-                "http://image.tmdb.org/t/p/w780/uSHjeRVuObwdpbECaXJnvyDoeJK.jpg",
-                "http://image.tmdb.org/t/p/w780/yNsdyNbQqaKN0TQxkHMws2KLTJ6.jpg",
-                "http://image.tmdb.org/t/p/w780/WLQN5aiQG8wc9SeKwixW7pAR8K.jpg",
-                "http://image.tmdb.org/t/p/w780/e1mjopzAS2KNsvpbpahQ1a6SkSn.jpg"
-        };
-
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.movie_covers_rv);
+        mMoviesGrid = (RecyclerView) findViewById(R.id.movie_covers_rv);
         int numberOfColumns = 2;
-        recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
-        adapter = new MyRecyclerViewAdapter(this, posterUrls);
+        mMoviesGrid.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
+        adapter = new MyRecyclerViewAdapter(this);
         adapter.setClickListener(this);
-        recyclerView.setAdapter(adapter);
+        mMoviesGrid.setAdapter(adapter);
+        mErrorMessageDisplay = (TextView) findViewById(R.id.error_message_tv);
+        mLoadingIndicator = (ProgressBar) findViewById(R.id.loading_indicator_pb);
+
+        loadMoviesData();
+    }
+
+    private void loadMoviesData() {
+        showMoviesGridView();
+
+        new FetchMoviesDataTask().execute("/movie/popular");
+    }
+
+    private void showMoviesGridView() {
+        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+        mMoviesGrid.setVisibility(View.VISIBLE);
+    }
+
+    private void showErrorMessage() {
+        mMoviesGrid.setVisibility(View.INVISIBLE);
+        mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onItemClick(View view, int position) {
-        //Log.i(TAG, "You clicked cover " + adapter.getItem(position) + ", which is at cell position " + position);
         Intent intent = new Intent(this, DetailActivity.class);
-        intent.putExtra("movieModel", new MovieModel(
-                "Jurassic World",
-                "Twenty-two years after the events of Jurassic Park, Isla Nublar now features a fully functioning dinosaur theme park, Jurassic World, as originally envisioned by John Hammond.",
-                "http://image.tmdb.org/t/p/w342/jjBgi2r5cRt36xF6iNUEhzscEcb.jpg",
-                "2015",
-                "6.5"
-        ));
+        intent.putExtra("movieModel", adapter.getItem(position));
         startActivity(intent);
     }
 
@@ -94,5 +85,54 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public class FetchMoviesDataTask extends AsyncTask<String, Void, MovieModel[]> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mLoadingIndicator.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected MovieModel[] doInBackground(String... params) {
+
+            if(android.os.Debug.isDebuggerConnected())
+                android.os.Debug.waitForDebugger();
+
+
+            if (params.length == 0) {
+                return null;
+            }
+
+            String serviceUrl = params[0];
+            URL moviesRequestUrl = NetworkUtils.buildUrl(serviceUrl);
+
+            try {
+                String jsonMoviesResponse = NetworkUtils
+                        .getResponseFromHttpUrl(moviesRequestUrl);
+
+                MovieModel[] moviesData = MovieModel
+                        .getModelsFromJson(jsonMoviesResponse);
+
+                return moviesData;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(MovieModel[] moviesData) {
+            mLoadingIndicator.setVisibility(View.INVISIBLE);
+            if (moviesData != null) {
+                showMoviesGridView();
+                adapter.setMoviesData(moviesData);
+            } else {
+                showErrorMessage();
+            }
+        }
     }
 }
