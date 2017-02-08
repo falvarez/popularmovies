@@ -1,5 +1,6 @@
 package androidtraining.falvarez.es.popularmovies;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -62,7 +63,9 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
 
     @Override
     public void onItemClick(View view, int position) {
-        Log.i(TAG, "You clicked cover " + adapter.getItem(position) + ", which is at cell position " + position);
+        //Log.i(TAG, "You clicked cover " + adapter.getItem(position) + ", which is at cell position " + position);
+        Intent intent = new Intent(this, DetailActivity.class);
+        startActivity(intent);
     }
 
     @Override
