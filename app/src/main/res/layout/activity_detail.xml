@@ -30,6 +30,7 @@
             android:id="@+id/detail_poster_iv"
             android:padding="16dp"
             android:contentDescription="Movie poster"
+            android:transitionName="movie_poster_transition"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/movie_poster_mock"

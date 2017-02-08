@@ -1,6 +1,7 @@
 package androidtraining.falvarez.es.popularmovies;
 
 import android.content.Intent;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -11,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements MyRecyclerViewAdapter.ItemClickListener {
@@ -65,7 +67,10 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
     public void onItemClick(View view, int position) {
         //Log.i(TAG, "You clicked cover " + adapter.getItem(position) + ", which is at cell position " + position);
         Intent intent = new Intent(this, DetailActivity.class);
-        startActivity(intent);
+        ImageView mMoviePoster = (ImageView) view.findViewById(R.id.movie_cover_iv);
+        ActivityOptionsCompat options = ActivityOptionsCompat.
+                makeSceneTransitionAnimation(this, (View) mMoviePoster, "movie_poster_transition");
+        startActivity(intent, options.toBundle());
     }
 
     @Override
