@@ -65,6 +65,13 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
     public void onItemClick(View view, int position) {
         //Log.i(TAG, "You clicked cover " + adapter.getItem(position) + ", which is at cell position " + position);
         Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra("movieModel", new MovieModel(
+                "Jurassic World",
+                "Twenty-two years after the events of Jurassic Park, Isla Nublar now features a fully functioning dinosaur theme park, Jurassic World, as originally envisioned by John Hammond.",
+                "http://image.tmdb.org/t/p/w342/jjBgi2r5cRt36xF6iNUEhzscEcb.jpg",
+                "2015",
+                "6.5"
+        ));
         startActivity(intent);
     }
 

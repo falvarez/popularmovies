@@ -29,21 +29,12 @@ public class DetailActivity extends AppCompatActivity {
 
         Intent intentThatStartedThisActivity = getIntent();
 
-        // COMPLETED (2) Display the weather forecast that was passed from MainActivity
-//        if (intentThatStartedThisActivity != null) {
-//            if (intentThatStartedThisActivity.hasExtra(Intent.EXTRA_TEXT)) {
-//
-//            }
-//        }
-
-        MovieModel movie = new MovieModel(
-                "Jurassic World",
-                "Twenty-two years after the events of Jurassic Park, Isla Nublar now features a fully functioning dinosaur theme park, Jurassic World, as originally envisioned by John Hammond.",
-                "http://image.tmdb.org/t/p/w342/jjBgi2r5cRt36xF6iNUEhzscEcb.jpg",
-                "2015",
-                "6.5"
-        );
-        showMovie(movie);
+        if (intentThatStartedThisActivity != null) {
+            if (intentThatStartedThisActivity.hasExtra("movieModel")) {
+                MovieModel movie = intentThatStartedThisActivity.getParcelableExtra("movieModel");
+                showMovie(movie);
+            }
+        }
     }
 
     private void showMovie(MovieModel movie) {

@@ -1,6 +1,9 @@
 package androidtraining.falvarez.es.popularmovies;
 
-public class MovieModel {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class MovieModel implements Parcelable {
 
     private String title;
     private String description;
@@ -35,4 +38,40 @@ public class MovieModel {
     public String getRating() {
         return rating;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeStringArray(new String[] {
+                this.title,
+                this.description,
+                this.posterUrl,
+                this.launchDate,
+                this.rating
+        });
+    }
+
+    public MovieModel(Parcel in) {
+        String[] data = new String[5];
+        in.readStringArray(data);
+        this.title = data[0];
+        this.description = data[1];
+        this.posterUrl = data[2];
+        this.launchDate = data[3];
+        this.rating = data[4];
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public MovieModel createFromParcel(Parcel in) {
+            return new MovieModel(in);
+        }
+
+        public MovieModel[] newArray(int size) {
+            return new MovieModel[size];
+        }
+    };
 }
