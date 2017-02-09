@@ -2,6 +2,7 @@ package androidtraining.falvarez.es.popularmovies;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.ImageView;
 
 import java.net.URL;
 
@@ -79,9 +81,13 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
 
     @Override
     public void onItemClick(View view, int position) {
+        ImageView mMoviePoster = (ImageView) view.findViewById(R.id.movie_cover_iv);
+
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra("movieModel", adapter.getItem(position));
-        startActivity(intent);
+        ActivityOptionsCompat options = ActivityOptionsCompat.
+                makeSceneTransitionAnimation(this, (View) mMoviePoster, "movie_poster_transition");
+        startActivity(intent, options.toBundle());
     }
 
     @Override
