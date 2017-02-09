@@ -4,9 +4,9 @@ Udacity training project stage 1.
 
 ## API calls
 
-Most popular: https://api.themoviedb.org/3/movie/popular?api_key=***REMOVED***
+Most popular: https://api.themoviedb.org/3/movie/popular?api_key=API_KEY
 
-Top rated: https://api.themoviedb.org/3/movie/top_rated?api_key=***REMOVED***
+Top rated: https://api.themoviedb.org/3/movie/top_rated?api_key=API_KEY
 
 
 ## Reference projects

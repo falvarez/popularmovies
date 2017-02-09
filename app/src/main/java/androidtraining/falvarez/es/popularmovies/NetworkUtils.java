@@ -14,10 +14,11 @@ public class NetworkUtils {
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
     private static final String API_BASE_URL = "https://api.themoviedb.org/3";
+    private static final String API_KEY = BuildConfig.MOVIEDB_API_KEY;
 
     public static URL buildUrl(String serviceUrl) {
         Uri builtUri = Uri.parse(API_BASE_URL + serviceUrl).buildUpon()
-                .appendQueryParameter("api_key", "***REMOVED***")
+                .appendQueryParameter("api_key", API_KEY)
                 .build();
 
         URL url = null;
