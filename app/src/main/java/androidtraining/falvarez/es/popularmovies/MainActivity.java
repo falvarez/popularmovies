@@ -19,6 +19,8 @@ import android.widget.Toast;
 
 import java.net.URL;
 
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+
 public class MainActivity extends AppCompatActivity implements MyRecyclerViewAdapter.ItemClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -41,8 +43,10 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mMoviesGrid = (RecyclerView) findViewById(R.id.movie_covers_rv);
-        int numberOfColumns = 2;
-        mMoviesGrid.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
+        int orientation = getResources().getConfiguration().orientation;
+        int numberOfColumns = (orientation == ORIENTATION_LANDSCAPE)? 3 : 2;
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, numberOfColumns);
+        mMoviesGrid.setLayoutManager(gridLayoutManager);
         adapter = new MyRecyclerViewAdapter(this);
         adapter.setClickListener(this);
         mMoviesGrid.setAdapter(adapter);
