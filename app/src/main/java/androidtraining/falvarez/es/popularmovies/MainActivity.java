@@ -2,6 +2,7 @@ package androidtraining.falvarez.es.popularmovies;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -30,6 +31,8 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
     private ProgressBar mLoadingIndicator;
     private RecyclerView mMoviesGrid;
 
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+
     private String mApiUrl = API_POPULAR;
     private String mTitle;
 
@@ -47,6 +50,15 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
         mLoadingIndicator = (ProgressBar) findViewById(R.id.loading_indicator_pb);
 
         mTitle = getResources().getString(R.string.most_popular_movies);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Refresh items
+                loadMoviesData();
+            }
+        });
 
         loadMoviesData();
     }
@@ -144,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
             if (moviesData != null) {
                 showMoviesGridView();
                 adapter.setMoviesData(moviesData);
+                mSwipeRefreshLayout.setRefreshing(false);
             } else {
                 showErrorMessage();
             }
