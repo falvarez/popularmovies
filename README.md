@@ -2,6 +2,10 @@
 
 Udacity training project stage 1.
 
+## Build instructions
+
+You will need an API key from https://www.themoviedb.org/ and store it in local gradle properties file. The variable name is `MovieDbApiKey`.
+
 ## API calls
 
 Most popular: https://api.themoviedb.org/3/movie/popular?api_key=API_KEY
