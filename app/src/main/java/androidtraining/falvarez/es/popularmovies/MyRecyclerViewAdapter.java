@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -29,6 +30,9 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.grid_item, parent, false);
+        int width = parent.getMeasuredWidth() / 2;
+        view.setMinimumWidth(width);
+        view.setMinimumHeight(width * 4 / 3);
         ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }
@@ -36,11 +40,10 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     // binds the data to the textview in each cell
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Picasso.with(mContext).setLoggingEnabled(true);
         Picasso
-                .with(mContext)
-                .load("http://image.tmdb.org/t/p/w780" + movies[position].getPosterUrl())
-                .into(holder.myImageView);
+            .with(mContext)
+            .load("http://image.tmdb.org/t/p/w780" + movies[position].getPosterUrl())
+            .into(holder.myImageView);
     }
 
     // total number of cells

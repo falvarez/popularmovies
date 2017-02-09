@@ -39,6 +39,8 @@ public class DetailActivity extends AppCompatActivity {
 
     private void showMovie(MovieModel movie) {
 
+        setTitle(movie.getTitle());
+
         String[] dateParts = movie.getLaunchDate().split("-");
 
         mMovieTitle.setText(movie.getTitle());
