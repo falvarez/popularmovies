@@ -1,6 +1,5 @@
 package androidtraining.falvarez.es.popularmovies;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -9,6 +8,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MovieModel implements Parcelable {
+
+    private static final String BASE_URL = "http://image.tmdb.org/t/p/";
+
+    public static final String MEASURE_W92 = "w92";
+    public static final String MEASURE_W154 = "w154";
+    public static final String MEASURE_W185 = "w185";
+    public static final String MEASURE_W342 = "w342";
+    public static final String MEASURE_W500 = "w500";
+    public static final String MEASURE_W780 = "w780";
+    public static final String MEASURE_ORIGINAL = "original";
 
     private String title;
     private String description;
@@ -32,8 +41,8 @@ public class MovieModel implements Parcelable {
         return description;
     }
 
-    public String getPosterUrl() {
-        return posterUrl;
+    public String getPosterFullUrl(String measure) {
+        return "http://image.tmdb.org/t/p/" + measure + posterUrl;
     }
 
     public String getLaunchDate() {
@@ -90,13 +99,11 @@ public class MovieModel implements Parcelable {
         final String API_VOTE_AVERAGE = "vote_average";
         final String API_POSTER_PATH = "poster_path";
 
-        MovieModel[] models = null;
         JSONObject moviesJson = new JSONObject(serviceJsonString);
-
 
         JSONArray moviesArray = moviesJson.getJSONArray(API_RESULTS);
 
-        models = new MovieModel[moviesArray.length()];
+        MovieModel[] models = new MovieModel[moviesArray.length()];
 
         for (int i = 0; i < moviesArray.length(); i++) {
             JSONObject movie = moviesArray.getJSONObject(i);

@@ -8,24 +8,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import java.net.URL;
 
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 
 public class MainActivity extends AppCompatActivity implements MyRecyclerViewAdapter.ItemClickListener {
-
-    private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final String API_POPULAR = "/movie/popular";
     private static final String API_TOP_RATED = "/movie/top_rated";
