@@ -22,10 +22,16 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    private static final String API_POPULAR = "/movie/popular";
+    private static final String API_TOP_RATED = "/movie/top_rated";
+
     private MyRecyclerViewAdapter adapter;
     private TextView mErrorMessageDisplay;
     private ProgressBar mLoadingIndicator;
     private RecyclerView mMoviesGrid;
+
+    private String mApiUrl = API_POPULAR;
+    private String mTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,13 +46,15 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
         mErrorMessageDisplay = (TextView) findViewById(R.id.error_message_tv);
         mLoadingIndicator = (ProgressBar) findViewById(R.id.loading_indicator_pb);
 
+        mTitle = getResources().getString(R.string.most_popular_movies);
+
         loadMoviesData();
     }
 
     private void loadMoviesData() {
         showMoviesGridView();
-
-        new FetchMoviesDataTask().execute("/movie/popular");
+        setTitle(mTitle);
+        new FetchMoviesDataTask().execute(mApiUrl);
     }
 
     private void showMoviesGridView() {
@@ -77,10 +85,16 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
         int id = item.getItemId();
 
         if (id == R.id.action_most_popular) {
+            mApiUrl = API_POPULAR;
+            mTitle = getResources().getString(R.string.most_popular_movies);
+            loadMoviesData();
             return true;
         }
 
         if (id == R.id.action_top_rated) {
+            mApiUrl = API_TOP_RATED;
+            mTitle = getResources().getString(R.string.top_rated_movies);
+            loadMoviesData();
             return true;
         }
 
