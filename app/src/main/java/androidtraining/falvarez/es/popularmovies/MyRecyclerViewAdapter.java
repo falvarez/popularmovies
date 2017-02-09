@@ -6,9 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
 
 public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.ViewHolder> {
 
@@ -40,10 +40,11 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     // binds the data to the textview in each cell
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Picasso
-            .with(mContext)
-            .load("http://image.tmdb.org/t/p/w780" + movies[position].getPosterUrl())
-            .into(holder.myImageView);
+        RequestCreator requestCreator = Picasso
+                .with(mContext)
+                .load(movies[position].getPosterFullUrl(MovieModel.MEASURE_W342));
+        requestCreator.fetch();
+        requestCreator.into(holder.myImageView);
     }
 
     // total number of cells

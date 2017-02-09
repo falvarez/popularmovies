@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.RequestCreator;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -48,10 +49,10 @@ public class DetailActivity extends AppCompatActivity {
         mMovieLaunchDate.setText(dateParts[0]);
         mMovieRating.setText("User rating: " + movie.getRating());
 
-        Picasso.with(this).setLoggingEnabled(true);
-        Picasso
+        RequestCreator requestCreator = Picasso
                 .with(this)
-                .load("http://image.tmdb.org/t/p/w342" + movie.getPosterUrl())
-                .into(mMoviePoster);
+                .load(movie.getPosterFullUrl(MovieModel.MEASURE_W342));
+        requestCreator.fetch();
+        requestCreator.into(mMoviePoster);
     }
 }
