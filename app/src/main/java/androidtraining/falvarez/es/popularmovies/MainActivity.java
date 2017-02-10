@@ -29,6 +29,8 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
     private ProgressBar mLoadingIndicator;
     private RecyclerView mMoviesGrid;
 
+    private GridLayoutManager gridLayoutManager;
+
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private String mApiUrl = API_POPULAR;
@@ -41,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
         mMoviesGrid = (RecyclerView) findViewById(R.id.movie_covers_rv);
         int orientation = getResources().getConfiguration().orientation;
         int numberOfColumns = (orientation == ORIENTATION_LANDSCAPE)? 3 : 2;
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, numberOfColumns);
+        gridLayoutManager = new GridLayoutManager(this, numberOfColumns);
         mMoviesGrid.setLayoutManager(gridLayoutManager);
         adapter = new MyRecyclerViewAdapter(this);
         adapter.setClickListener(this);
@@ -72,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
     private void showMoviesGridView() {
         mErrorMessageDisplay.setVisibility(View.INVISIBLE);
         mMoviesGrid.setVisibility(View.VISIBLE);
+        gridLayoutManager.scrollToPositionWithOffset(0, 0);
     }
 
     private void showErrorMessage() {
