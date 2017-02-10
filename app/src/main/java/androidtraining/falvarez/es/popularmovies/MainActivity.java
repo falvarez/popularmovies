@@ -85,9 +85,13 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
 
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra("movieModel", adapter.getItem(position));
-        ActivityOptionsCompat options = ActivityOptionsCompat.
-                makeSceneTransitionAnimation(this, (View) mMoviePoster, "movie_poster_transition");
-        startActivity(intent, options.toBundle());
+        if (android.os.Build.VERSION.SDK_INT >= 21) {
+            ActivityOptionsCompat options = ActivityOptionsCompat.
+                    makeSceneTransitionAnimation(this, (View) mMoviePoster, "movie_poster_transition");
+            startActivity(intent, options.toBundle());
+        } else {
+            startActivity(intent);
+        }
     }
 
     @Override
