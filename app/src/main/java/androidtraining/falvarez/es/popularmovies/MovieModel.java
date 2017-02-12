@@ -9,7 +9,9 @@ import org.json.JSONObject;
 
 public class MovieModel implements Parcelable {
 
-    private static final String BASE_URL = "http://image.tmdb.org/t/p/";
+    public static final String EXTRA_MOVIE_MODEL = "movieModel";
+
+    private static final String URL_FORMAT = "http://image.tmdb.org/t/p/%s/%s";
 
     public static final String MEASURE_W92 = "w92";
     public static final String MEASURE_W154 = "w154";
@@ -42,7 +44,7 @@ public class MovieModel implements Parcelable {
     }
 
     public String getPosterFullUrl(String measure) {
-        return "http://image.tmdb.org/t/p/" + measure + posterUrl;
+        return String.format(URL_FORMAT, measure, posterUrl);
     }
 
     public String getLaunchDate() {
@@ -89,10 +91,8 @@ public class MovieModel implements Parcelable {
         }
     };
 
-    public static MovieModel[] getModelsFromJson(String serviceJsonString) throws JSONException {
-
+    public static MovieModel[] createModelsFromJson(String serviceJsonString) throws JSONException {
         final String API_RESULTS = "results";
-
         final String API_TITLE = "title";
         final String API_OVERVIEW = "overview";
         final String API_RELEASE_DATE = "release_date";
