@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,8 +39,10 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
     private String mCurrentTitle;
 
     public static int getGridNumberOfColumns(Context context) {
-        int orientation = context.getResources().getConfiguration().orientation;
-        return (orientation == ORIENTATION_LANDSCAPE)? 3 : 2;
+        // @see http://stackoverflow.com/questions/33575731/gridlayoutmanager-how-to-auto-fit-columns
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        return (int) (dpWidth / 180);
     }
 
     private void initGridLayoutManager() {
