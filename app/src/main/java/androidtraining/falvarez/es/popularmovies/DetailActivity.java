@@ -10,24 +10,19 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class DetailActivity extends AppCompatActivity {
 
-    private TextView mMovieTitle;
-    private TextView mMovieDescription;
-    private ImageView mMoviePoster;
-    private TextView mMovieLaunchDate;
-    private TextView mMovieRating;
-
-    private void configureViews() {
-        mMovieTitle = (TextView) findViewById(R.id.detail_title_tv);
-        mMovieDescription = (TextView) findViewById(R.id.detail_description_tv);
-        mMoviePoster = (ImageView) findViewById(R.id.detail_poster_iv);
-        mMovieLaunchDate = (TextView) findViewById(R.id.detail_launch_date_tv);
-        mMovieRating = (TextView) findViewById(R.id.detail_rating_tv);
-    }
+    @BindView(R.id.detail_title_tv) TextView mMovieTitle;
+    @BindView(R.id.detail_description_tv) TextView mMovieDescription;
+    @BindView(R.id.detail_poster_iv) ImageView mMoviePoster;
+    @BindView(R.id.detail_launch_date_tv) TextView mMovieLaunchDate;
+    @BindView(R.id.detail_rating_tv) TextView mMovieRating;
 
     private void init() {
-        configureViews();
+        ButterKnife.bind(this);
 
         Intent intentThatStartedThisActivity = getIntent();
 

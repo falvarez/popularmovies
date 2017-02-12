@@ -19,18 +19,20 @@ import android.widget.Toast;
 
 import java.net.URL;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 
 public class MainActivity extends AppCompatActivity implements MyRecyclerViewAdapter.ItemClickListener {
 
+    @BindView(R.id.movie_covers_rv) RecyclerView mMoviesGrid;
+    @BindView(R.id.error_message_tv) TextView mErrorMessageDisplay;
+    @BindView(R.id.loading_indicator_pb) ProgressBar mLoadingIndicator;
+    @BindView(R.id.swipe_refresh_layout) SwipeRefreshLayout mSwipeRefreshLayout;
+
     private MyRecyclerViewAdapter adapter;
-    private TextView mErrorMessageDisplay;
-    private ProgressBar mLoadingIndicator;
-    private RecyclerView mMoviesGrid;
-
     private GridLayoutManager gridLayoutManager;
-
-    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private String mCurrentApiUrl;
     private String mCurrentTitle;
@@ -38,13 +40,6 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
     public static int getGridNumberOfColumns(Context context) {
         int orientation = context.getResources().getConfiguration().orientation;
         return (orientation == ORIENTATION_LANDSCAPE)? 3 : 2;
-    }
-
-    private void configureViews() {
-        mMoviesGrid = (RecyclerView) findViewById(R.id.movie_covers_rv);
-        mErrorMessageDisplay = (TextView) findViewById(R.id.error_message_tv);
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.loading_indicator_pb);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
     }
 
     private void initGridLayoutManager() {
@@ -68,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
     }
 
     private void init() {
-        configureViews();
+        ButterKnife.bind(this);
         initGridLayoutManager();
         setGridAdapter();
         initSwipeRefresh();
