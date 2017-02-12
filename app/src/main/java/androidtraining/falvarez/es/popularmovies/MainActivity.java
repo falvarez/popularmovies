@@ -1,5 +1,6 @@
 package androidtraining.falvarez.es.popularmovies;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -14,15 +15,13 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.net.URL;
 
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 
 public class MainActivity extends AppCompatActivity implements MyRecyclerViewAdapter.ItemClickListener {
-
-    private static final String API_POPULAR = "/movie/popular";
-    private static final String API_TOP_RATED = "/movie/top_rated";
 
     private MyRecyclerViewAdapter adapter;
     private TextView mErrorMessageDisplay;
@@ -33,42 +32,67 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
-    private String mApiUrl = API_POPULAR;
-    private String mTitle;
+    private String mCurrentApiUrl;
+    private String mCurrentTitle;
+
+    public static int getGridNumberOfColumns(Context context) {
+        int orientation = context.getResources().getConfiguration().orientation;
+        return (orientation == ORIENTATION_LANDSCAPE)? 3 : 2;
+    }
+
+    private void configureViews() {
+        mMoviesGrid = (RecyclerView) findViewById(R.id.movie_covers_rv);
+        mErrorMessageDisplay = (TextView) findViewById(R.id.error_message_tv);
+        mLoadingIndicator = (ProgressBar) findViewById(R.id.loading_indicator_pb);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+    }
+
+    private void initGridLayoutManager() {
+        gridLayoutManager = new GridLayoutManager(this, getGridNumberOfColumns(this));
+        mMoviesGrid.setLayoutManager(gridLayoutManager);
+    }
+
+    private void setGridAdapter() {
+        adapter = new MyRecyclerViewAdapter(this);
+        adapter.setClickListener(this);
+        mMoviesGrid.setAdapter(adapter);
+    }
+
+    private void initSwipeRefresh() {
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshMoviesGrid(mCurrentApiUrl, mCurrentTitle);
+            }
+        });
+    }
+
+    private void init() {
+        configureViews();
+        initGridLayoutManager();
+        setGridAdapter();
+        initSwipeRefresh();
+
+        String defaultApiMethod = TheMovieDbApiClient.API_METHOD_MOVIE_POPULAR;
+        String defaulTitle = getResources().getString(R.string.most_popular_movies);
+        refreshMoviesGrid(defaultApiMethod, defaulTitle);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mMoviesGrid = (RecyclerView) findViewById(R.id.movie_covers_rv);
-        int orientation = getResources().getConfiguration().orientation;
-        int numberOfColumns = (orientation == ORIENTATION_LANDSCAPE)? 3 : 2;
-        gridLayoutManager = new GridLayoutManager(this, numberOfColumns);
-        mMoviesGrid.setLayoutManager(gridLayoutManager);
-        adapter = new MyRecyclerViewAdapter(this);
-        adapter.setClickListener(this);
-        mMoviesGrid.setAdapter(adapter);
-        mErrorMessageDisplay = (TextView) findViewById(R.id.error_message_tv);
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.loading_indicator_pb);
-
-        mTitle = getResources().getString(R.string.most_popular_movies);
-
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                // Refresh items
-                loadMoviesData();
-            }
-        });
-
-        loadMoviesData();
+        init();
     }
 
-    private void loadMoviesData() {
-        showMoviesGridView();
-        setTitle(mTitle);
-        new FetchMoviesDataTask().execute(mApiUrl);
+    private void refreshMoviesGrid(String apiUrl, String title) {
+        if (NetworkUtils.isOnline()) {
+            showMoviesGridView();
+            new FetchMoviesDataTask().execute(apiUrl, title);
+        } else {
+            mSwipeRefreshLayout.setRefreshing(false);
+            Toast.makeText(this, R.string.network_down, Toast.LENGTH_LONG).show();
+        }
     }
 
     private void showMoviesGridView() {
@@ -88,9 +112,11 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
 
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra("movieModel", adapter.getItem(position));
+
+        // Configure image transitions for API Level >= 21
         if (android.os.Build.VERSION.SDK_INT >= 21) {
             ActivityOptionsCompat options = ActivityOptionsCompat.
-                    makeSceneTransitionAnimation(this, (View) mMoviePoster, "movie_poster_transition");
+                    makeSceneTransitionAnimation(this, mMoviePoster, "movie_poster_transition");
             startActivity(intent, options.toBundle());
         } else {
             startActivity(intent);
@@ -108,16 +134,18 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
         int id = item.getItemId();
 
         if (id == R.id.action_most_popular) {
-            mApiUrl = API_POPULAR;
-            mTitle = getResources().getString(R.string.most_popular_movies);
-            loadMoviesData();
+            refreshMoviesGrid(
+                    TheMovieDbApiClient.API_METHOD_MOVIE_POPULAR,
+                    getResources().getString(R.string.most_popular_movies)
+            );
             return true;
         }
 
         if (id == R.id.action_top_rated) {
-            mApiUrl = API_TOP_RATED;
-            mTitle = getResources().getString(R.string.top_rated_movies);
-            loadMoviesData();
+            refreshMoviesGrid(
+                    TheMovieDbApiClient.API_METHOD_MOVIE_TOP_RATED,
+                    getResources().getString(R.string.top_rated_movies)
+            );
             return true;
         }
 
@@ -134,27 +162,19 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
 
         @Override
         protected MovieModel[] doInBackground(String... params) {
-
-            if(android.os.Debug.isDebuggerConnected())
-                android.os.Debug.waitForDebugger();
-
-
             if (params.length == 0) {
                 return null;
             }
 
             String serviceUrl = params[0];
-            URL moviesRequestUrl = NetworkUtils.buildUrl(serviceUrl);
+            String title = params[1];
+            URL moviesRequestUrl = TheMovieDbApiClient.buildUrl(serviceUrl);
 
             try {
-                String jsonMoviesResponse = NetworkUtils
-                        .getResponseFromHttpUrl(moviesRequestUrl);
-
-                MovieModel[] moviesData = MovieModel
-                        .getModelsFromJson(jsonMoviesResponse);
-
-                return moviesData;
-
+                String jsonMoviesResponse = NetworkUtils.getResponseFromHttpUrl(moviesRequestUrl);
+                mCurrentApiUrl = serviceUrl;
+                mCurrentTitle = title;
+                return MovieModel.createModelsFromJson(jsonMoviesResponse);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -166,8 +186,10 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
             mLoadingIndicator.setVisibility(View.INVISIBLE);
             if (moviesData != null) {
                 showMoviesGridView();
+                setTitle(mCurrentTitle);
                 adapter.setMoviesData(moviesData);
                 mSwipeRefreshLayout.setRefreshing(false);
+
             } else {
                 showErrorMessage();
             }

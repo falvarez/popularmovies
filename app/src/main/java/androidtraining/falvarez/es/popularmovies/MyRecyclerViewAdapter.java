@@ -12,8 +12,6 @@ import com.squareup.picasso.RequestCreator;
 
 public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.ViewHolder> {
 
-    private static final String TAG = MyRecyclerViewAdapter.class.getSimpleName();
-
     private MovieModel[] movies;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
@@ -26,28 +24,32 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         this.mContext = context;
     }
 
-    // inflates the cell layout from xml when needed
     @Override
+    /**
+     * Inflates the cell layout from XML when needed
+     */
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = mInflater.inflate(R.layout.grid_item, parent, false);
-        int width = parent.getMeasuredWidth() / 2;
+        int width = parent.getMeasuredWidth() / MainActivity.getGridNumberOfColumns(mContext);
         view.setMinimumWidth(width);
         view.setMinimumHeight(width * 4 / 3);
         ViewHolder viewHolder = new ViewHolder(view);
         return viewHolder;
     }
 
-    // binds the data to the textview in each cell
     @Override
+    /**
+     * Binds the data to the text view in each cell
+     */
     public void onBindViewHolder(ViewHolder holder, int position) {
         RequestCreator requestCreator = Picasso
                 .with(mContext)
                 .load(movies[position].getPosterFullUrl(MovieModel.MEASURE_W342));
         requestCreator.fetch();
         requestCreator.into(holder.myImageView);
+        holder.myImageView.setContentDescription(movies[position].getTitle());
     }
 
-    // total number of cells
     @Override
     public int getItemCount() {
         if (movies == null) {
@@ -56,8 +58,9 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         return movies.length;
     }
 
-
-    // stores and recycles views as they are scrolled off screen
+    /**
+     * Stores and recycles views as they are scrolled off screen
+     */
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView myImageView;
 
@@ -69,21 +72,20 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
         @Override
         public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+            if (mClickListener != null) {
+                mClickListener.onItemClick(view, getAdapterPosition());
+            }
         }
     }
 
-    // convenience method for getting data at click position
     public MovieModel getItem(int id) {
         return movies[id];
     }
 
-    // allows clicks events to be caught
     public void setClickListener(ItemClickListener itemClickListener) {
         this.mClickListener = itemClickListener;
     }
 
-    // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
         void onItemClick(View view, int position);
     }

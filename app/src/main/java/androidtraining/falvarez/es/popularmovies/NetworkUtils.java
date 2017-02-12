@@ -1,37 +1,12 @@
 package androidtraining.falvarez.es.popularmovies;
 
-import android.net.Uri;
-import android.util.Log;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
 public class NetworkUtils {
-
-    private static final String TAG = NetworkUtils.class.getSimpleName();
-    private static final String API_BASE_URL = "https://api.themoviedb.org/3";
-    private static final String API_KEY = BuildConfig.MOVIEDB_API_KEY;
-
-    public static URL buildUrl(String serviceUrl) {
-        Uri builtUri = Uri.parse(API_BASE_URL + serviceUrl).buildUpon()
-                .appendQueryParameter("api_key", API_KEY)
-                .build();
-
-        URL url = null;
-        try {
-            url = new URL(builtUri.toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-
-        Log.v(TAG, "Built URI " + url);
-
-        return url;
-    }
 
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
@@ -50,5 +25,21 @@ public class NetworkUtils {
         } finally {
             urlConnection.disconnect();
         }
+    }
+
+    public static boolean isOnline() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }
