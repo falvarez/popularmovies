@@ -3,7 +3,11 @@
     <string name="action_most_popular">Most popular</string>
     <string name="action_top_rated">Top rated</string>
     <string name="error_message">An error has occurred. Please pull to refresh</string>
+    <string name="network_down">Network connection is down, try again later</string>
 
     <string name="most_popular_movies">Most popular movies</string>
     <string name="top_rated_movies">Top rated movies</string>
+
+    <!-- DetailActivity -->
+    <string name="user_rating">User rating: %s</string>
 </resources>
