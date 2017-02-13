@@ -42,6 +42,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
      * Binds the data to the text view in each cell
      */
     public void onBindViewHolder(ViewHolder holder, int position) {
+        // TODO manage errors
         RequestCreator requestCreator = Picasso
                 .with(mContext)
                 .load(movies[position].getPosterFullUrl(MovieModel.MEASURE_W342));

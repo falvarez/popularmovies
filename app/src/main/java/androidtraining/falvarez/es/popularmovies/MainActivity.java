@@ -150,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
         return super.onOptionsItemSelected(item);
     }
 
+    // TODO move to a single file
     public class FetchMoviesDataTask extends AsyncTask<String, Void, MovieModel[]> {
 
         @Override

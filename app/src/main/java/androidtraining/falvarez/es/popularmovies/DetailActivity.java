@@ -44,6 +44,7 @@ public class DetailActivity extends AppCompatActivity {
         mMovieLaunchDate.setText(dateParts[0]);
         mMovieRating.setText(String.format(getResources().getString(R.string.user_rating), movie.getRating()));
 
+        // TODO manage errors
         RequestCreator requestCreator = Picasso
                 .with(this)
                 .load(movie.getPosterFullUrl(MovieModel.MEASURE_W342));
