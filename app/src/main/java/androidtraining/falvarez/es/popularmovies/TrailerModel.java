@@ -4,8 +4,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 public class TrailerModel {
 
     public static final String TYPE_TRAILER = "Trailer";
@@ -73,7 +71,7 @@ public class TrailerModel {
 
     public String getVideoUrl() {
         if (site.equals(SITE_YOUTUBE)) {
-            return "https://wwwyoutube.com/?watch=" + key;
+            return "https://www.youtube.com/v/" + key;
         } else {
             return null;
         }

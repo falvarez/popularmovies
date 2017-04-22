@@ -79,10 +79,9 @@
         android:text="@string/trailers_title"
         />
 
-    <TextView
-        android:padding="16dp"
-        android:textSize="18sp"
-        android:id="@+id/trailers_list_tv"
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/trailers_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

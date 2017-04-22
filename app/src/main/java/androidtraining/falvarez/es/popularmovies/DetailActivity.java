@@ -1,11 +1,15 @@
 package androidtraining.falvarez.es.popularmovies;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,7 +28,7 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.detail_poster_iv) ImageView mMoviePoster;
     @BindView(R.id.detail_launch_date_tv) TextView mMovieLaunchDate;
     @BindView(R.id.detail_rating_tv) TextView mMovieRating;
-    @BindView(R.id.trailers_list_tv) TextView mTrailersList;
+    @BindView(R.id.trailers_list) LinearLayout mTrailersList;
     @BindView(R.id.reviews_list_tv) TextView mReviewsList;
 
     String mMovieId;
@@ -126,6 +130,32 @@ public class DetailActivity extends AppCompatActivity {
             }
         }
 
+        private ImageView createPosterImageView(final TrailerModel trailer) {
+
+            Context context = getApplicationContext();
+            ImageView trailerPoster = new ImageView(context);
+
+            RequestCreator requestCreator = Picasso
+                    .with(context)
+                    .load(trailer.getThumbnailUrl());
+            requestCreator.fetch();
+            requestCreator.into(trailerPoster);
+
+            trailerPoster.setPadding(16, 16, 16, 16);
+
+            trailerPoster.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String url = trailer.getVideoUrl();
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    startActivity(intent);
+                }
+            });
+
+            return trailerPoster;
+        }
+
         @Override
         protected void onPostExecute(TrailerModel[] trailers) {
             //mLoadingIndicator.setVisibility(View.INVISIBLE);
@@ -133,7 +163,7 @@ public class DetailActivity extends AppCompatActivity {
                 for (TrailerModel trailer : trailers) {
                     if (trailer.getType().equals(TrailerModel.TYPE_TRAILER)
                             && (null != trailer.getVideoUrl())) {
-                        mTrailersList.append(trailer.getVideoUrl() + "\n");
+                        mTrailersList.addView(createPosterImageView(trailer));
                     }
                 }
             } else {
