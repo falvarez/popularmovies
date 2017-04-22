@@ -13,7 +13,19 @@ public class TheMovieDbApiClient {
     public static final String API_METHOD_MOVIE_POPULAR = "/movie/popular";
     public static final String API_METHOD_MOVIE_TOP_RATED = "/movie/top_rated";
 
+    public static final String API_METHOD_MOVIE_TRAILERS = "/movie/{id}/videos";
+    public static final String API_METHOD_MOVIE_REVIEWS = "/movie/{id}/reviews";
+
     public static URL buildUrl(String serviceUrl) {
+        return buildUrl(serviceUrl, null);
+    }
+
+    public static URL buildUrl(String serviceUrl, String id) {
+
+        if (null != id) {
+            serviceUrl = serviceUrl.replace("{id}", id);
+        }
+
         Uri builtUri = Uri.parse(API_BASE_URL + serviceUrl).buildUpon()
                 .appendQueryParameter("api_key", API_KEY)
                 .build();

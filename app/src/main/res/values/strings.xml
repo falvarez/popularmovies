@@ -13,4 +13,6 @@
 
     <!-- DetailActivity -->
     <string name="user_rating">User rating: %s</string>
+    <string name="trailers_title">Trailers</string>
+    <string name="reviews_title">Reviews</string>
 </resources>

@@ -21,18 +21,24 @@ public class MovieModel implements Parcelable {
     public static final String MEASURE_W780 = "w780";
     public static final String MEASURE_ORIGINAL = "original";
 
+    private String id;
     private String title;
     private String description;
     private String posterUrl;
     private String launchDate;
     private String rating;
 
-    public MovieModel(String title, String description, String posterUrl, String launchDate, String rating) {
+    public MovieModel(String id, String title, String description, String posterUrl, String launchDate, String rating) {
+        this.id = id;
         this.title = title;
         this.description = description;
         this.posterUrl = posterUrl;
         this.launchDate = launchDate;
         this.rating = rating;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getTitle() {
@@ -62,7 +68,8 @@ public class MovieModel implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeStringArray(new String[] {
+        dest.writeStringArray(new String[]{
+                this.id,
                 this.title,
                 this.description,
                 this.posterUrl,
@@ -72,13 +79,14 @@ public class MovieModel implements Parcelable {
     }
 
     public MovieModel(Parcel in) {
-        String[] data = new String[5];
+        String[] data = new String[6];
         in.readStringArray(data);
-        this.title = data[0];
-        this.description = data[1];
-        this.posterUrl = data[2];
-        this.launchDate = data[3];
-        this.rating = data[4];
+        this.id = data[0];
+        this.title = data[1];
+        this.description = data[2];
+        this.posterUrl = data[3];
+        this.launchDate = data[4];
+        this.rating = data[5];
     }
 
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
@@ -93,6 +101,7 @@ public class MovieModel implements Parcelable {
 
     public static MovieModel[] createModelsFromJson(String serviceJsonString) throws JSONException {
         final String API_RESULTS = "results";
+        final String API_ID = "id";
         final String API_TITLE = "title";
         final String API_OVERVIEW = "overview";
         final String API_RELEASE_DATE = "release_date";
@@ -108,6 +117,7 @@ public class MovieModel implements Parcelable {
         for (int i = 0; i < moviesArray.length(); i++) {
             JSONObject movie = moviesArray.getJSONObject(i);
             models[i] = new MovieModel(
+                    movie.getString(API_ID),
                     movie.getString(API_TITLE),
                     movie.getString(API_OVERVIEW),
                     movie.getString(API_POSTER_PATH),

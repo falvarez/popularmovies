@@ -1,14 +1,18 @@
 package androidtraining.falvarez.es.popularmovies;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
+
+import java.net.URL;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,6 +24,10 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.detail_poster_iv) ImageView mMoviePoster;
     @BindView(R.id.detail_launch_date_tv) TextView mMovieLaunchDate;
     @BindView(R.id.detail_rating_tv) TextView mMovieRating;
+    @BindView(R.id.trailers_list_tv) TextView mTrailersList;
+    @BindView(R.id.reviews_list_tv) TextView mReviewsList;
+
+    String mMovieId;
 
     private void init() {
         ButterKnife.bind(this);
@@ -39,6 +47,7 @@ public class DetailActivity extends AppCompatActivity {
 
         String[] dateParts = movie.getLaunchDate().split("-");
 
+        mMovieId = movie.getId();
         mMovieTitle.setText(movie.getTitle());
         mMovieDescription.setText(movie.getDescription());
         mMovieLaunchDate.setText(dateParts[0]);
@@ -50,6 +59,9 @@ public class DetailActivity extends AppCompatActivity {
                 .load(movie.getPosterFullUrl(MovieModel.MEASURE_W342));
         requestCreator.fetch();
         requestCreator.into(mMoviePoster);
+
+        refreshTrailersInfo(mMovieId);
+        refreshReviewsInfo(mMovieId);
     }
 
     @Override
@@ -68,6 +80,105 @@ public class DetailActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void refreshTrailersInfo(String id) {
+        if (NetworkUtils.isOnline()) {
+            new DetailActivity.FetchTrailersDataTask().execute(TheMovieDbApiClient.API_METHOD_MOVIE_TRAILERS, id);
+        } else {
+            Toast.makeText(this, R.string.network_down, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void refreshReviewsInfo(String id) {
+        if (NetworkUtils.isOnline()) {
+            new DetailActivity.FetchReviewsDataTask().execute(TheMovieDbApiClient.API_METHOD_MOVIE_REVIEWS, id);
+        } else {
+            Toast.makeText(this, R.string.network_down, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public class FetchTrailersDataTask extends AsyncTask<String, Void, TrailerModel[]> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            //mLoadingIndicator.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected TrailerModel[] doInBackground(String... params) {
+            if (params.length == 0) {
+                return null;
+            }
+
+            String serviceUrl = params[0];
+            String id = params[1];
+            URL reviewsRequestUrl = TheMovieDbApiClient.buildUrl(serviceUrl, id);
+
+            try {
+                String jsonTrailersResponse = NetworkUtils.getResponseFromHttpUrl(reviewsRequestUrl);
+                return TrailerModel.createModelsFromJson(jsonTrailersResponse);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(TrailerModel[] trailers) {
+            //mLoadingIndicator.setVisibility(View.INVISIBLE);
+            if (trailers != null) {
+                for (TrailerModel trailer : trailers) {
+                    if (trailer.getType().equals(TrailerModel.TYPE_TRAILER)
+                            && (null != trailer.getVideoUrl())) {
+                        mTrailersList.append(trailer.getVideoUrl() + "\n");
+                    }
+                }
+            } else {
+                //showErrorMessage();
+            }
+        }
+    }
+
+    public class FetchReviewsDataTask extends AsyncTask<String, Void, ReviewModel[]> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            //mLoadingIndicator.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected ReviewModel[] doInBackground(String... params) {
+            if (params.length == 0) {
+                return null;
+            }
+
+            String serviceUrl = params[0];
+            String id = params[1];
+            URL reviewsRequestUrl = TheMovieDbApiClient.buildUrl(serviceUrl, id);
+
+            try {
+                String jsonReviewsResponse = NetworkUtils.getResponseFromHttpUrl(reviewsRequestUrl);
+                return ReviewModel.createModelsFromJson(jsonReviewsResponse);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(ReviewModel[] reviews) {
+            //mLoadingIndicator.setVisibility(View.INVISIBLE);
+            if (reviews != null) {
+                for (ReviewModel review : reviews) {
+                    mReviewsList.append("Review by " + review.getAuthor() + "\n" + review.getContent() + "\n\n");
+                }
+            } else {
+                //showErrorMessage();
+            }
         }
     }
 }
