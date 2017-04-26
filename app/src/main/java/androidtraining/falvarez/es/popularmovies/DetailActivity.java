@@ -1,11 +1,15 @@
 package androidtraining.falvarez.es.popularmovies;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -29,7 +33,7 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.detail_launch_date_tv) TextView mMovieLaunchDate;
     @BindView(R.id.detail_rating_tv) TextView mMovieRating;
     @BindView(R.id.trailers_list) LinearLayout mTrailersList;
-    @BindView(R.id.reviews_list_tv) TextView mReviewsList;
+    @BindView(R.id.reviews_list) LinearLayout mReviewsList;
 
     String mMovieId;
 
@@ -204,7 +208,41 @@ public class DetailActivity extends AppCompatActivity {
             //mLoadingIndicator.setVisibility(View.INVISIBLE);
             if (reviews != null) {
                 for (ReviewModel review : reviews) {
-                    mReviewsList.append("Review by " + review.getAuthor() + "\n" + review.getContent() + "\n\n");
+
+                    final ReviewModel reviewModel = review;
+
+                    Context context = getApplicationContext();
+                    TextView reviewTitle = new TextView(context);
+                    reviewTitle.setText(String.format(getResources().getString(R.string.review_author_title), review.getAuthor()));
+                    reviewTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+                    reviewTitle.setPadding(16, 16, 16, 16);
+                    reviewTitle.setTextColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                    reviewTitle.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            String url = reviewModel.getUrl();
+                            Intent intent = new Intent(Intent.ACTION_VIEW);
+                            intent.setData(Uri.parse(url));
+                            startActivity(intent);
+                        }
+                    });
+
+                    TextView reviewContent = new TextView(context);
+                    reviewContent.setText(review.getContent());
+                    reviewContent.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+                    reviewContent.setPadding(16, 16, 16, 16);
+
+                    View separator = new View(context);
+                    separator.setLayoutParams(new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            1
+                    ));
+                    separator.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary));
+                    separator.setPadding(0, 0, 0, 32);
+
+                    mReviewsList.addView(reviewTitle);
+                    mReviewsList.addView(reviewContent);
+                    mReviewsList.addView(separator);
                 }
             } else {
                 //showErrorMessage();
