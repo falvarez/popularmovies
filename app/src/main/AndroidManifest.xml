@@ -21,6 +21,13 @@
             android:name="android.support.PARENT_ACTIVITY"
             android:value=".MainActivity" />
         </activity>
+
+        <provider
+            android:name="androidtraining.falvarez.es.popularmovies.data.MovieContentProvider"
+            android:authorities="androidtraining.falvarez.es.popularmovies"
+            android:exported="false"
+            />
+
     </application>
 
 </manifest>

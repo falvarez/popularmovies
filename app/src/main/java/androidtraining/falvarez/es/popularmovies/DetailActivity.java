@@ -1,17 +1,19 @@
 package androidtraining.falvarez.es.popularmovies;
 
-import android.app.ActionBar;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -22,6 +24,7 @@ import com.squareup.picasso.RequestCreator;
 
 import java.net.URL;
 
+import androidtraining.falvarez.es.popularmovies.data.MovieContract;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -34,8 +37,10 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.detail_rating_tv) TextView mMovieRating;
     @BindView(R.id.trailers_list) LinearLayout mTrailersList;
     @BindView(R.id.reviews_list) LinearLayout mReviewsList;
+    @BindView(R.id.favourite_ib) ImageButton mFavouriteButton;
 
-    String mMovieId;
+    MovieModel mMovie;
+    Boolean mIsFavourite;
 
     private void init() {
         ButterKnife.bind(this);
@@ -55,7 +60,8 @@ public class DetailActivity extends AppCompatActivity {
 
         String[] dateParts = movie.getLaunchDate().split("-");
 
-        mMovieId = movie.getId();
+        mMovie = movie;
+
         mMovieTitle.setText(movie.getTitle());
         mMovieDescription.setText(movie.getDescription());
         mMovieLaunchDate.setText(dateParts[0]);
@@ -68,8 +74,52 @@ public class DetailActivity extends AppCompatActivity {
         requestCreator.fetch();
         requestCreator.into(mMoviePoster);
 
-        refreshTrailersInfo(mMovieId);
-        refreshReviewsInfo(mMovieId);
+        refreshTrailersInfo(mMovie.getId());
+        refreshReviewsInfo(mMovie.getId());
+
+        // Favourite handling
+        new FetchFavouriteDataTask().execute(mMovie.getId());
+
+        mFavouriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ImageButton imageButton = (ImageButton) view;
+                if (mIsFavourite) {
+                    mIsFavourite = false;
+                    imageButton.setImageResource(android.R.drawable.btn_star_big_off);
+                    // Delete movie from content provider
+                    unsetMovieAsFavourite();
+                } else {
+                    mIsFavourite = true;
+                    imageButton.setImageResource(android.R.drawable.btn_star_big_on);
+                    // Add movie to content provider
+                    setMovieAsFavourite();
+                }
+            }
+        });
+    }
+
+    private void setMovieAsFavourite() {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MovieContract.MovieEntry._ID, mMovie.getId());
+        contentValues.put(MovieContract.MovieEntry.COLUMN_TITLE, mMovie.getTitle());
+        contentValues.put(MovieContract.MovieEntry.COLUMN_DESCRIPTION, mMovie.getDescription());
+        contentValues.put(MovieContract.MovieEntry.COLUMN_POSTER_URL, mMovie.getPosterFullUrl(MovieModel.MEASURE_W342));
+        contentValues.put(MovieContract.MovieEntry.COLUMN_LAUNCH_DATE, mMovie.getLaunchDate());
+        contentValues.put(MovieContract.MovieEntry.COLUMN_RATING, mMovie.getRating());
+        Uri uri = getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, contentValues);
+        if(uri != null) {
+            Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void unsetMovieAsFavourite() {
+        Uri uri = MovieContract.MovieEntry.CONTENT_URI;
+        uri = uri.buildUpon().appendPath(mMovie.getId()).build();
+        if(uri != null) {
+            Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_LONG).show();
+        }
+        getContentResolver().delete(uri, null, null);
     }
 
     @Override
@@ -247,6 +297,54 @@ public class DetailActivity extends AppCompatActivity {
             } else {
                 //showErrorMessage();
             }
+        }
+    }
+
+    public class FetchFavouriteDataTask extends AsyncTask<String, Void, Boolean> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            //mLoadingIndicator.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            if (params.length == 0) {
+                return null;
+            }
+
+            String movieId = params[0];
+            try {
+                Cursor cursor = getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
+                        null,
+                        MovieContract.MovieEntry._ID + " = ?",
+                        new String[]{movieId},
+                        null);
+                Boolean result = (cursor.getCount() > 0);
+                cursor.close();
+                return result;
+
+            } catch (Exception e) {
+                Log.e("DetailActivity", "Failed to asynchronously load data.");
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean isFavourite) {
+            if (null == isFavourite) {
+                return;
+            }
+
+            mIsFavourite = isFavourite;
+            if (mIsFavourite) {
+                mFavouriteButton.setImageResource(android.R.drawable.btn_star_big_on);
+            } else {
+                mFavouriteButton.setImageResource(android.R.drawable.btn_star_big_off);
+            }
+            mFavouriteButton.setVisibility(View.VISIBLE);
         }
     }
 }
