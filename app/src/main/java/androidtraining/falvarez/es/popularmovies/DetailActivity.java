@@ -1,5 +1,6 @@
 package androidtraining.falvarez.es.popularmovies;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ShareCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -41,6 +43,7 @@ public class DetailActivity extends AppCompatActivity {
     @BindView(R.id.trailers_list) LinearLayout mTrailersList;
     @BindView(R.id.reviews_list) LinearLayout mReviewsList;
     @BindView(R.id.favourite_ib) ImageButton mFavouriteButton;
+    @BindView(R.id.share_ib) ImageButton mShareButton;
 
     MovieModel mMovie;
     Boolean mIsFavourite;
@@ -61,7 +64,7 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
-    private void showMovie(MovieModel movie) {
+    private void showMovie(final MovieModel movie) {
 
         String[] dateParts = movie.getLaunchDate().split("-");
 
@@ -102,6 +105,10 @@ public class DetailActivity extends AppCompatActivity {
                 }
             }
         });
+
+        final Activity activity = this;
+
+
     }
 
     private void setMovieAsFavourite() {
@@ -162,6 +169,24 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
+    private void showShareButton(final String trailerUrl)
+    {
+        final Activity activity = this;
+        final String movieTitle = mMovie.getTitle();
+        mShareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ShareCompat.IntentBuilder
+                        .from(activity)
+                        .setType("text/plain")
+                        .setChooserTitle(String.format(getString(R.string.share_movie_trailer_title), movieTitle))
+                        .setText(String.format(getString(R.string.share_movie_trailer_text), movieTitle, trailerUrl))
+                        .startChooser();
+            }
+        });
+        mShareButton.setVisibility(View.VISIBLE);
+    }
+
     public class FetchTrailersDataTask extends AsyncTask<String, Void, TrailerModel[]> {
 
         @Override
@@ -218,12 +243,17 @@ public class DetailActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(TrailerModel[] trailers) {
             //mLoadingIndicator.setVisibility(View.INVISIBLE);
+            String firstTrailerUrl = null;
             if (trailers != null) {
                 for (TrailerModel trailer : trailers) {
                     if (trailer.getType().equals(TrailerModel.TYPE_TRAILER)
                             && (null != trailer.getVideoUrl())) {
                         mTrailersList.addView(createPosterImageView(trailer));
+                        if (null == firstTrailerUrl) {
+                            firstTrailerUrl = trailer.getVideoUrl();
+                        }
                     }
+                    showShareButton(firstTrailerUrl);
                 }
             } else {
                 //showErrorMessage();

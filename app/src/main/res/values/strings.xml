@@ -22,4 +22,7 @@
 
     <string name="marked_as_favourite">%s marked as favourite</string>
     <string name="unmarked_as_favourite">%s unmarked as favourite</string>
+
+    <string name="share_movie_trailer_title">Share %s trailer</string>
+    <string name="share_movie_trailer_text">Trailer from motion picture %1$s %2$s</string>
 </resources>

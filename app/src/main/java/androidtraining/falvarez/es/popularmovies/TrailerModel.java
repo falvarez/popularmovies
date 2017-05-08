@@ -71,7 +71,7 @@ public class TrailerModel {
 
     public String getVideoUrl() {
         if (site.equals(SITE_YOUTUBE)) {
-            return "https://www.youtube.com/v/" + key;
+            return "https://youtu.be/" + key;
         } else {
             return null;
         }
