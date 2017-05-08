@@ -2,6 +2,7 @@ package androidtraining.falvarez.es.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import java.net.URL;
 
+import androidtraining.falvarez.es.popularmovies.data.MovieContract;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -146,6 +148,14 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
             return true;
         }
 
+        if (id == R.id.action_favourites) {
+            refreshMoviesGrid(
+                    TheMovieDbApiClient.API_METHOD_MOVIE_FAVOURITES,
+                    getResources().getString(R.string.favourite_movies)
+            );
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -166,17 +176,35 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
 
             String serviceUrl = params[0];
             String title = params[1];
-            URL moviesRequestUrl = TheMovieDbApiClient.buildUrl(serviceUrl);
+
+            MovieModel[] movieModels;
 
             try {
-                String jsonMoviesResponse = NetworkUtils.getResponseFromHttpUrl(moviesRequestUrl);
-                mCurrentApiUrl = serviceUrl;
-                mCurrentTitle = title;
-                return MovieModel.createModelsFromJson(jsonMoviesResponse);
+                if (serviceUrl.equals(TheMovieDbApiClient.API_METHOD_MOVIE_FAVOURITES)) {
+                    // Fetch movies from content provider
+                    Cursor cursor = getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
+                            null,
+                            null,
+                            null,
+                            MovieContract.MovieEntry.COLUMN_TITLE
+                    );
+                    movieModels = MovieModel.createModelsFromCursor(cursor);
+                    //cursor.close();
+                } else {
+                    // Fetch movies from API
+                    URL moviesRequestUrl = TheMovieDbApiClient.buildUrl(serviceUrl);
+                    String jsonMoviesResponse = NetworkUtils.getResponseFromHttpUrl(moviesRequestUrl);
+                    movieModels = MovieModel.createModelsFromJson(jsonMoviesResponse);
+                }
+
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
+
+            mCurrentTitle = title;
+            mCurrentApiUrl = serviceUrl;
+            return movieModels;
         }
 
         @Override

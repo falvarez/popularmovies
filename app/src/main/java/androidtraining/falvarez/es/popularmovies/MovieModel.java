@@ -1,11 +1,14 @@
 package androidtraining.falvarez.es.popularmovies;
 
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import androidtraining.falvarez.es.popularmovies.data.MovieContract;
 
 public class MovieModel implements Parcelable {
 
@@ -126,6 +129,24 @@ public class MovieModel implements Parcelable {
             );
         }
 
+        return models;
+    }
+
+    public static MovieModel[] createModelsFromCursor(Cursor cursor) {
+        cursor.moveToFirst();
+        int movieCount = cursor.getCount();
+        MovieModel[] models = new MovieModel[movieCount];
+        for (int i = 0; i < movieCount; i++) {
+            models[i] = new MovieModel(
+                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry._ID)),
+                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_TITLE)),
+                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_DESCRIPTION)),
+                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_POSTER_URL)),
+                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_LAUNCH_DATE)),
+                    cursor.getString(cursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_RATING))
+            );
+            cursor.moveToNext();
+        }
         return models;
     }
 }

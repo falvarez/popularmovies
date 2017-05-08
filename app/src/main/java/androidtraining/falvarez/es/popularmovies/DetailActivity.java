@@ -109,7 +109,7 @@ public class DetailActivity extends AppCompatActivity {
         contentValues.put(MovieContract.MovieEntry.COLUMN_RATING, mMovie.getRating());
         Uri uri = getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, contentValues);
         if(uri != null) {
-            Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), String.format(getString(R.string.marked_as_favourite), mMovie.getTitle()), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -117,7 +117,7 @@ public class DetailActivity extends AppCompatActivity {
         Uri uri = MovieContract.MovieEntry.CONTENT_URI;
         uri = uri.buildUpon().appendPath(mMovie.getId()).build();
         if(uri != null) {
-            Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), String.format(getString(R.string.unmarked_as_favourite), mMovie.getTitle()), Toast.LENGTH_LONG).show();
         }
         getContentResolver().delete(uri, null, null);
     }

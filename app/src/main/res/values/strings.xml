@@ -2,12 +2,14 @@
     <string name="app_name">PopularMovies</string>
     <string name="action_most_popular">Most popular</string>
     <string name="action_top_rated">Top rated</string>
+    <string name="action_favourites">Favourites</string>
     <string name="error_message">An error has occurred. Please pull to refresh</string>
     <string name="network_down">Network connection is down, try again later</string>
 
     <!-- MainActivity -->
     <string name="most_popular_movies">Most popular movies</string>
     <string name="top_rated_movies">Top rated movies</string>
+    <string name="favourite_movies">My favourite movies</string>
 
     <string name="movie_cover">Movie cover</string>
 
@@ -16,4 +18,7 @@
     <string name="trailers_title">Trailers</string>
     <string name="reviews_title">Reviews</string>
     <string name="review_author_title">Review by %s</string>
+
+    <string name="marked_as_favourite">%s marked as favourite</string>
+    <string name="unmarked_as_favourite">%s unmarked as favourite</string>
 </resources>

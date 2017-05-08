@@ -12,6 +12,7 @@ public class TheMovieDbApiClient {
 
     public static final String API_METHOD_MOVIE_POPULAR = "/movie/popular";
     public static final String API_METHOD_MOVIE_TOP_RATED = "/movie/top_rated";
+    public static final String API_METHOD_MOVIE_FAVOURITES = "/movie/favourites"; // This is not really an API Method
 
     public static final String API_METHOD_MOVIE_TRAILERS = "/movie/{id}/videos";
     public static final String API_METHOD_MOVIE_REVIEWS = "/movie/{id}/reviews";
