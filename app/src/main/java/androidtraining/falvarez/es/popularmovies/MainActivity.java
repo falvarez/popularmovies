@@ -123,7 +123,8 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
         ImageView mMoviePoster = (ImageView) view.findViewById(R.id.movie_cover_iv);
 
         Intent intent = new Intent(this, DetailActivity.class);
-        intent.putExtra("movieModel", adapter.getItem(position));
+        intent.putExtra(DetailActivity.EXTRA_MOVIE_MODEL, adapter.getItem(position));
+        intent.putExtra(DetailActivity.EXTRA_ACTIVITY_TITLE, this.mCurrentTitle);
 
         // Configure image transitions for API Level >= 21
         if (android.os.Build.VERSION.SDK_INT >= 21) {

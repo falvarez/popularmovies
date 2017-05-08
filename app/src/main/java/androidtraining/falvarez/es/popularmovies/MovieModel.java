@@ -12,8 +12,6 @@ import androidtraining.falvarez.es.popularmovies.data.MovieContract;
 
 public class MovieModel implements Parcelable {
 
-    public static final String EXTRA_MOVIE_MODEL = "movieModel";
-
     private static final String URL_FORMAT = "http://image.tmdb.org/t/p/%s/%s";
 
     public static final String MEASURE_W92 = "w92";

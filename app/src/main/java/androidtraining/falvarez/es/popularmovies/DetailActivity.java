@@ -30,6 +30,9 @@ import butterknife.ButterKnife;
 
 public class DetailActivity extends AppCompatActivity {
 
+    public static final String EXTRA_ACTIVITY_TITLE = "activityTitle";
+    public static final String EXTRA_MOVIE_MODEL = "movieModel";
+
     @BindView(R.id.detail_title_tv) TextView mMovieTitle;
     @BindView(R.id.detail_description_tv) TextView mMovieDescription;
     @BindView(R.id.detail_poster_iv) ImageView mMoviePoster;
@@ -48,15 +51,17 @@ public class DetailActivity extends AppCompatActivity {
         Intent intentThatStartedThisActivity = getIntent();
 
         if (intentThatStartedThisActivity != null) {
-            if (intentThatStartedThisActivity.hasExtra(MovieModel.EXTRA_MOVIE_MODEL)) {
-                MovieModel movie = intentThatStartedThisActivity.getParcelableExtra(MovieModel.EXTRA_MOVIE_MODEL);
+            if (intentThatStartedThisActivity.hasExtra(EXTRA_MOVIE_MODEL)) {
+                MovieModel movie = intentThatStartedThisActivity.getParcelableExtra(DetailActivity.EXTRA_MOVIE_MODEL);
                 showMovie(movie);
+            }
+            if (intentThatStartedThisActivity.hasExtra(EXTRA_ACTIVITY_TITLE)) {
+                setTitle(intentThatStartedThisActivity.getStringExtra(EXTRA_ACTIVITY_TITLE));
             }
         }
     }
 
     private void showMovie(MovieModel movie) {
-        setTitle(movie.getTitle());
 
         String[] dateParts = movie.getLaunchDate().split("-");
 
