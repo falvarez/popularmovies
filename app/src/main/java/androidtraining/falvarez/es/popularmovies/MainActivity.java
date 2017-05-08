@@ -27,6 +27,9 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements MyRecyclerViewAdapter.ItemClickListener {
 
+    private static final String INSTANCE_STATE_CURRENT_API_URL = "currentApiUrl";
+    private static final String INSTANCE_STATE_CURRENT_TITLE = "currentTitle";
+
     @BindView(R.id.movie_covers_rv) RecyclerView mMoviesGrid;
     @BindView(R.id.error_message_tv) TextView mErrorMessageDisplay;
     @BindView(R.id.loading_indicator_pb) ProgressBar mLoadingIndicator;
@@ -36,6 +39,14 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
     private GridLayoutManager gridLayoutManager;
 
     private String mCurrentApiUrl;
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(INSTANCE_STATE_CURRENT_API_URL, mCurrentApiUrl);
+        outState.putString(INSTANCE_STATE_CURRENT_TITLE, mCurrentTitle);
+    }
+
     private String mCurrentTitle;
 
     public static int getGridNumberOfColumns(Context context) {
@@ -65,23 +76,31 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
         });
     }
 
-    private void init() {
+    private void init(Bundle savedInstanceState) {
 
         ButterKnife.bind(this);
         initGridLayoutManager();
         setGridAdapter();
         initSwipeRefresh();
 
-        String defaultApiMethod = TheMovieDbApiClient.API_METHOD_MOVIE_POPULAR;
-        String defaulTitle = getResources().getString(R.string.most_popular_movies);
-        refreshMoviesGrid(defaultApiMethod, defaulTitle);
+        String apiMethod;
+        String title;
+
+        if (null != savedInstanceState) {
+            apiMethod = savedInstanceState.getString(INSTANCE_STATE_CURRENT_API_URL);
+            title = savedInstanceState.getString(INSTANCE_STATE_CURRENT_TITLE);
+        } else {
+            apiMethod = TheMovieDbApiClient.API_METHOD_MOVIE_POPULAR;
+            title = getResources().getString(R.string.most_popular_movies);
+        }
+        refreshMoviesGrid(apiMethod, title);
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        init();
+        init(savedInstanceState);
     }
 
     @Override
