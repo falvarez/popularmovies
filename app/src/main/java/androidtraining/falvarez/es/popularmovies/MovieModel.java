@@ -52,6 +52,10 @@ public class MovieModel implements Parcelable {
         return description;
     }
 
+    public String getPosterUrl() {
+        return posterUrl;
+    }
+
     public String getPosterFullUrl(String measure) {
         return String.format(URL_FORMAT, measure, posterUrl);
     }

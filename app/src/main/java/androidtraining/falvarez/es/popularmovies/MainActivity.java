@@ -84,9 +84,22 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
         init();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (null == mCurrentApiUrl) {
+            return;
+        }
+        if (mCurrentApiUrl.equals(TheMovieDbApiClient.API_METHOD_MOVIE_FAVOURITES)) {
+            refreshMoviesGrid(
+                    TheMovieDbApiClient.API_METHOD_MOVIE_FAVOURITES,
+                    getResources().getString(R.string.favourite_movies)
+            );
+        }
+    }
+
     private void refreshMoviesGrid(String apiUrl, String title) {
         if (NetworkUtils.isOnline()) {
-            showMoviesGridView();
             new FetchMoviesDataTask().execute(apiUrl, title);
         } else {
             mSwipeRefreshLayout.setRefreshing(false);

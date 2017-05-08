@@ -104,7 +104,7 @@ public class DetailActivity extends AppCompatActivity {
         contentValues.put(MovieContract.MovieEntry._ID, mMovie.getId());
         contentValues.put(MovieContract.MovieEntry.COLUMN_TITLE, mMovie.getTitle());
         contentValues.put(MovieContract.MovieEntry.COLUMN_DESCRIPTION, mMovie.getDescription());
-        contentValues.put(MovieContract.MovieEntry.COLUMN_POSTER_URL, mMovie.getPosterFullUrl(MovieModel.MEASURE_W342));
+        contentValues.put(MovieContract.MovieEntry.COLUMN_POSTER_URL, mMovie.getPosterUrl());
         contentValues.put(MovieContract.MovieEntry.COLUMN_LAUNCH_DATE, mMovie.getLaunchDate());
         contentValues.put(MovieContract.MovieEntry.COLUMN_RATING, mMovie.getRating());
         Uri uri = getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, contentValues);
