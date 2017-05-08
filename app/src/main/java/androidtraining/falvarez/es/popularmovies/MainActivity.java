@@ -99,7 +99,8 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
     }
 
     private void refreshMoviesGrid(String apiUrl, String title) {
-        if (NetworkUtils.isOnline()) {
+        if (NetworkUtils.isOnline()
+                || apiUrl.equals(TheMovieDbApiClient.API_METHOD_MOVIE_FAVOURITES)) {
             new FetchMoviesDataTask().execute(apiUrl, title);
         } else {
             mSwipeRefreshLayout.setRefreshing(false);
