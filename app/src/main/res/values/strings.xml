@@ -4,6 +4,7 @@
     <string name="action_top_rated">Top rated</string>
     <string name="action_favourites">Favourites</string>
     <string name="error_message">An error has occurred. Please pull to refresh</string>
+    <string name="no_favourites_message">You don\'t have any favourite movie</string>
     <string name="network_down">Network connection is down, try again later</string>
 
     <!-- MainActivity -->

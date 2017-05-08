@@ -116,6 +116,13 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
 
     private void showErrorMessage() {
         mMoviesGrid.setVisibility(View.INVISIBLE);
+        mErrorMessageDisplay.setText(getString(R.string.error_message));
+        mErrorMessageDisplay.setVisibility(View.VISIBLE);
+    }
+
+    private void showNoFavouritesEmptyMessage() {
+        mMoviesGrid.setVisibility(View.INVISIBLE);
+        mErrorMessageDisplay.setText(getString(R.string.no_favourites_message));
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
@@ -226,11 +233,15 @@ public class MainActivity extends AppCompatActivity implements MyRecyclerViewAda
         protected void onPostExecute(MovieModel[] moviesData) {
             mLoadingIndicator.setVisibility(View.INVISIBLE);
             if (moviesData != null) {
-                showMoviesGridView();
-                setTitle(mCurrentTitle);
-                adapter.setMoviesData(moviesData);
-                mSwipeRefreshLayout.setRefreshing(false);
 
+                if (moviesData.length == 0) {
+                    showNoFavouritesEmptyMessage();
+                } else {
+                    showMoviesGridView();
+                    setTitle(mCurrentTitle);
+                    adapter.setMoviesData(moviesData);
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
             } else {
                 showErrorMessage();
             }
